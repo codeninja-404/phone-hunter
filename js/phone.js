@@ -2,13 +2,13 @@
 //   .then((res) => res.json())
 //   .then((data) => console.log(data));
 
-const loadPhone = async (searchText , isShowAll) => {
+const loadPhone = async (searchText, isShowAll) => {
   const res = await fetch(
     `https://openapi.programming-hero.com/api/phones?search=${searchText}`
   );
   const data = await res.json();
-  console.log(data.data);
-  displayPhones(data.data , isShowAll);
+
+  displayPhones(data.data, isShowAll);
 };
 
 const displayPhones = (phones, isShowAll) => {
@@ -21,11 +21,10 @@ const displayPhones = (phones, isShowAll) => {
   } else {
     showAllContainer.classList.add("hidden");
   }
-  if(!isShowAll){
+  if (!isShowAll) {
     phones = phones.slice(0, 6);
   }
   phones.forEach((phone) => {
-    console.log(phone);
     // 1 create a div
     const phoneCard = document.createElement("div");
     phoneCard.classList = `card bg-gray-200 shadow-xl`;
@@ -40,9 +39,9 @@ const displayPhones = (phones, isShowAll) => {
     </figure>
     <div class="card-body items-center text-center">
         <h2 class="card-title">${phone.phone_name}</h2>
-        <p>If a dog chews shoes whose shoes does he choose?</p>
+        
         <div class="card-actions">
-        <button class="btn btn-primary">Buy Now</button>
+        <button onclick="handleShowDetails('${phone.slug}')" class="btn btn-primary">Show Details</button>
         </div>
     </div>
     `;
@@ -50,6 +49,37 @@ const displayPhones = (phones, isShowAll) => {
     phoneContainer.appendChild(phoneCard);
   });
   toggleSpinner(false);
+};
+
+const handleShowDetails = async (id) => {
+  // load single phone data
+  const res = await fetch(
+    `https://openapi.programming-hero.com/api/phone/${id}`
+  );
+  const data = await res.json();
+  const phone = data.data;
+  showPhoneDetails(phone);
+};
+
+const showPhoneDetails = (phone) => {
+  console.log(phone);
+  
+  const showDetailContainer = document.getElementById('show-detail-container')
+  showDetailContainer.innerHTML= `
+  <figure class="px-10 pt-10">
+        <img
+        src="${phone.image}"
+        alt="Phone"
+        class="rounded-xl mx-auto"
+        />
+    </figure>
+    <div class="card-body items-center text-center">
+        <h2 class="card-title font-bold text-3xl">${phone.name}</h2>
+        <p> <span class="text-xl font-bold">Storage : </span>${phone.mainFeatures.storage}</p>
+        
+    </div>
+  `
+  show_details_modal.showModal();
 };
 
 const handleSearch = (isShowAll) => {
@@ -69,7 +99,7 @@ const toggleSpinner = (isLoading) => {
 };
 
 const handleShowAll = () => {
-  handleSearch(true)
+  handleSearch(true);
 };
 
 // loadPhone();
